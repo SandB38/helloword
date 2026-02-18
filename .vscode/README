@@ -1,0 +1,58 @@
+## copilot-instruction / AGENTS.ms
+Contains coding style, architecture notes, build/test/deploy commands, libraries to prefer/avoid.
+
+## Agents
+### Tester
+- create new unit tests if necessary
+- run tests
+- fix tests
+
+## Agent skills
+The Agent Skills specification is an [open standard](https://agentskills.io/home), used by a range of different AI systems.
+
+Skills allow to perform specialized tasks using coding agents.
+
+Open source skills available for example :
+- https://skills.sh/ 
+- https://context7.com/skills
+
+## Workflow
+
+```mermaid
+graph TD;
+    A@{ shape: circle, label: "Start" }
+    S@{ shape: circle, label: "Stop" }
+    
+    O["Orchestrator"]
+    IsTOK{Is technical context well defined ?}
+    C7["Context7 Expert"]
+    FE["Functional expert"]
+    IsFOK{Is functional context well defined ?}
+    MCP_RAG([RAG FREAD.AI])
+    IsPOK{Do you accept the plan ?}    
+    C["Coder"]
+    T["Testor"]
+    R["Reviewer"]
+    IsROK{Is all done ?} 
+    GC["Git Commiter"]
+    MCP_C7([Context7])
+    
+    A--Prompt-->O
+    O-->IsTOK;
+    IsTOK-- no -->C7;
+    C7<-- MCP -->MCP_C7;
+    C7-- add technical context to the plan -->IsFOK;
+    IsTOK-- yes -->IsFOK;
+    IsFOK-- no -->FE;
+    FE<-- MCP -->MCP_RAG;
+    FE-- add functional context to the plan -->IsPOK;
+    IsFOK-- yes -->IsPOK;
+    IsPOK-- no. Give more information by prompting -->O;
+    IsPOK-- yes -->C;    
+    C-->T;
+    T-->R;
+    R-->IsROK;
+    IsROK-- yes -->GC;
+    IsROK-- no -->O;
+    GC-->S
+```
